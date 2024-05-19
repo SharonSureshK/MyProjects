@@ -1,0 +1,51 @@
+ <div class="container my-4 mt-4" style="background: lightblue; color: white; border-radius: 15px; padding: 40px;">
+    <form action="/predict" method="post">
+        <div class="form-group">
+           <label for="symptoms" style="color: blue;">Select Symptoms:</label>
+
+            <select class="form-select" id="symptoms" name="symptoms" multiple>
+                {% for symptom in symptoms %}
+                    <option value="{{ symptom }}">{{ symptom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="voiceTranscript" style="margin-top: 10px;"></div> <!-- Display transcribed text here -->
+        <br>
+        <button type="button" id="speakButton" class="btn btn-primary btn-lg" style="width: 100%; padding: 14px; margin-bottom: 5px;">Click to Speak</button>
+        <br>
+        <button type="submit" class="btn btn-danger btn-lg" style="width: 100%; padding: 14px; margin-bottom: 5px;">CLICK HERE</button>
+    </form>
+</div>
+
+<script>
+    const symptomsSelect = document.getElementById('symptoms');
+    const speakButton = document.getElementById('speakButton');
+    const voiceTranscript = document.getElementById('voiceTranscript');
+
+    speakButton.addEventListener('click', () => {
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new window.webkitSpeechRecognition();
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                // Append the transcript as an option to the symptoms select element
+                const option = document.createElement('option');
+                option.text = transcript;
+                symptomsSelect.add(option);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+            };
+
+            recognition.start();
+        } else {
+            console.error('Speech recognition not supported');
+        }
+    });
+</script>
+
+
+
